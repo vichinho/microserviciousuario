@@ -1,48 +1,57 @@
 package com.microserviciousuario.microserviciousuario.controller;
 
-import com.microserviciousuario.microserviciousuario.model.Rol;
 import com.microserviciousuario.microserviciousuario.model.Usuario;
-import com.microserviciousuario.microserviciousuario.repository.UsuarioRepository;
-import com.microserviciousuario.microserviciousuario.repository.RolRepository;
+import com.microserviciousuario.microserviciousuario.model.Rol;
+import com.microserviciousuario.microserviciousuario.service.UsuarioService;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("api/usuarios")
 public class UsuarioController {
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
-    @Autowired
-    private RolRepository rolRepository; // Inyectamos RolRepository
-
+    // GET: Listar todos los usuarios
     @GetMapping
-    public List<Usuario> getAllUsuarios() {
-        return usuarioRepository.findAll();
+    public List<Usuario> listarUsuarios() {
+        return usuarioService.listarTodos();
     }
 
+    // GET: Obtener un usuario por ID
+    @GetMapping("/{id}")
+    public Usuario obtenerUsuario(@PathVariable int id) {
+        return usuarioService.buscarPorId(id);
+    }
+
+    // POST: Crear un nuevo usuario
     @PostMapping
-    public Usuario createUsuario(@RequestBody Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public Usuario crearUsuario(@RequestBody Usuario usuario) {
+        return usuarioService.crearUsuario(usuario);
     }
 
-    @PutMapping("/{usuarioId}/rol/{rolId}")
-    public Usuario assignRoleToUser(@PathVariable int usuarioId, @PathVariable int rolId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
-        Rol rol = rolRepository.findById(rolId)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado con id: " + rolId));
-        usuario.setRol(rol);
-        return usuarioRepository.save(usuario);
+    // PUT: Actualizar un usuario existente
+    @PutMapping("/{id}")
+    public Usuario actualizarUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
+        return usuarioService.actualizarUsuario(id, usuario);
     }
 
-    @DeleteMapping("/{usuarioId}/rol")
-    public Usuario removeRoleFromUser(@PathVariable int usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + usuarioId));
-        usuario.setRol(null);
-        return usuarioRepository.save(usuario);
+    // PUT: Asignar rol a usuario
+    @PutMapping("/{usuarioId}/asignar-rol")
+    public Usuario asignarRol(
+    @PathVariable int usuarioId,
+    @RequestBody Map<String, Integer> request // Cambio clave: acepta un mapa con el ID del rol
+    ){
+    return usuarioService.asignarRol(usuarioId, request.get("rolId")); // Extrae el ID del rol
+    }
+
+    // PUT: Revocar rol de usuario
+    @PutMapping("/{usuarioId}/revocar-rol")
+    public Usuario revocarRol(@PathVariable int usuarioId) {
+        return usuarioService.revocarRol(usuarioId);
     }
 }

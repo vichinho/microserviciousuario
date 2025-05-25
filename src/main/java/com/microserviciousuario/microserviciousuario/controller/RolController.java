@@ -1,56 +1,47 @@
 package com.microserviciousuario.microserviciousuario.controller;
 
 import com.microserviciousuario.microserviciousuario.model.Rol;
-import com.microserviciousuario.microserviciousuario.model.Permiso;
-import com.microserviciousuario.microserviciousuario.repository.RolRepository;
-import com.microserviciousuario.microserviciousuario.repository.PermisoRepository;
+import com.microserviciousuario.microserviciousuario.service.RolService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("api/roles")
+
 public class RolController {
     @Autowired
-    private RolRepository rolRepository;
-
-    @Autowired
-    private PermisoRepository permisoRepository;
+    private RolService rolService;
 
     @GetMapping
-    public List<Rol> getAllRoles() {
-        return rolRepository.findAll();
+    public List<Rol> listarRoles() {
+        return rolService.listarTodos();
+    }
+
+    @GetMapping("/{id}")
+    public Rol obtenerRol(@PathVariable int id) {
+        return rolService.buscarPorId(id);
     }
 
     @PostMapping
-    public Rol createRol(@RequestBody RolRequest rolRequest) {
-        Rol rol = new Rol();
-        rol.setNombre(rolRequest.getNombre());
-
-        if (rolRequest.getPermisoIds() != null && !rolRequest.getPermisoIds().isEmpty()) {
-            List<Permiso> permisos = rolRequest.getPermisoIds().stream()
-                    .map(id -> permisoRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("Permiso no encontrado con id: " + id)))
-                    .collect(Collectors.toList());
-            rol.setPermisos(permisos);
-        }
-
-        return rolRepository.save(rol);
-    }
-}
-
-record RolRequest(String nombre, List<Integer> permisoIds) {
-    public RolRequest(String nombre) {
-        this(nombre, null);
+    public Rol crearRol(@RequestBody Rol rol) {
+        return rolService.crearRol(rol);
     }
 
-    public String getNombre() {
-        return nombre;
+    @PutMapping("/{id}")
+    public Rol actualizarRol(@PathVariable int id, @RequestBody Rol rol) {
+        return rolService.actualizarRol(id, rol);
     }
 
-    public List<Integer> getPermisoIds() {
-        return permisoIds;
+    @PutMapping("/{rolId}/asignar-permisos") // Sin barra al final
+    public Rol asignarPermisos(@PathVariable int rolId,@RequestBody List<Integer> permisosIds) {
+        return rolService.asignarPermisos(rolId, permisosIds);
+    }
+
+    @DeleteMapping("/{rolId}/quitar-permiso/{permisoId}")
+    public Rol quitarPermisoDeRol(@PathVariable int rolId,@PathVariable int permisoId) {
+        return rolService.quitarPermiso(rolId, permisoId);
     }
 }

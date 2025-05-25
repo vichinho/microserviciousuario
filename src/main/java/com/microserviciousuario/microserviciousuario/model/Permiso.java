@@ -1,7 +1,9 @@
 package com.microserviciousuario.microserviciousuario.model;
 
-import lombok.Data;
 import jakarta.persistence.*;
+import lombok.Data;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -10,5 +12,10 @@ public class Permiso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String nombre;
-    private String descripcion;
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "rol_id")
+    @JsonIgnore
+    private Rol rol;
 }

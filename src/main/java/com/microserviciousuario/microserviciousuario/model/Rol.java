@@ -1,7 +1,7 @@
 package com.microserviciousuario.microserviciousuario.model;
 
-import lombok.Data;
 import jakarta.persistence.*;
+import lombok.Data;
 import java.util.List;
 
 @Entity
@@ -12,7 +12,6 @@ public class Rol {
     private int id;
     private String nombre;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "rol_id", nullable = true)
+    @OneToMany(mappedBy = "rol", cascade = CascadeType.ALL)
     private List<Permiso> permisos;
 }
