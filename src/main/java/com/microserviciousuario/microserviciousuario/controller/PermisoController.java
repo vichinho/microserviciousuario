@@ -1,10 +1,9 @@
 package com.microserviciousuario.microserviciousuario.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.microserviciousuario.microserviciousuario.model.Permiso;
 import com.microserviciousuario.microserviciousuario.repository.PermisoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
