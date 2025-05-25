@@ -1,7 +1,6 @@
 package com.microserviciousuario.microserviciousuario.controller;
 
 import com.microserviciousuario.microserviciousuario.model.Usuario;
-import com.microserviciousuario.microserviciousuario.model.Rol;
 import com.microserviciousuario.microserviciousuario.service.UsuarioService;
 
 import java.util.List;
